@@ -245,16 +245,19 @@ public class Deck : MonoBehaviour
 
     public void Hit()
     {
-        /*TODO: 
-         * Si estamos en la mano inicial, debemos voltear la primera carta del dealer.
-         */
-        
+        if (cardIndex < 5)
+        {
+            dealer.GetComponent<CardHand>().InitialToggle();
+        }
         //Repartimos carta al jugador
         PushPlayer();
 
-        /*TODO:
-         * Comprobamos si el jugador ya ha perdido y mostramos mensaje
-         */      
+        if (player.GetComponent<CardHand>().points > 21)
+        {
+            hitButton.interactable = false;
+            stickButton.interactable = false;
+            finalMessage.text = "Has perdido!";
+        }
 
     }
 
