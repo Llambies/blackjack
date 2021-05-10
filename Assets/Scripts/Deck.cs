@@ -6,13 +6,25 @@ public class Deck : MonoBehaviour
     public Sprite[] faces;
     public GameObject dealer;
     public GameObject player;
+
     public Button hitButton;
     public Button stickButton;
     public Button playAgainButton;
+
+    public Button subirButton;
+    public Button bajarButton;
+    public Button apostarButton;
+
     public Text finalMessage;
+
     public Text probAMessage;
     public Text probBMessage;
     public Text probCMessage;
+
+    public Text banca;
+    public int bancaAmount;
+    public Text apuesta;
+    public int apuestaAmount;
 
     public int[] values = new int[52];
     int cardIndex = 0;    
@@ -25,8 +37,12 @@ public class Deck : MonoBehaviour
 
     private void Start()
     {
+        bancaAmount = 1000;
+        banca.text = bancaAmount.ToString();
         ShuffleCards();
-        StartGame();        
+        hitButton.interactable = false;
+        stickButton.interactable = false;
+        playAgainButton.interactable = false;
     }
 
     private void InitCardValues()
@@ -78,6 +94,7 @@ public class Deck : MonoBehaviour
 
     void StartGame()
     {
+
         for (int i = 0; i < 2; i++)
         {
             PushPlayer();
@@ -90,13 +107,13 @@ public class Deck : MonoBehaviour
             {
                 hitButton.interactable = false;
                 stickButton.interactable = false;
-                finalMessage.text = "Has ganado!";
+                ganar();
             }
             else if (Dealer.points == 21)
             {
                 hitButton.interactable = false;
                 stickButton.interactable = false;
-                finalMessage.text = "Has perdido!";
+                perder();
             }
 
         }
@@ -136,8 +153,7 @@ public class Deck : MonoBehaviour
 
             }
             float probA = casosFavorablesA / 49;
-            //Debug.Log(probA);
-            probAMessage.text = "Proba A : " + probA.ToString() + " ";
+            probAMessage.text = probA.ToString() + " ";
         }
 
         float casosFavorablesB = 0;
@@ -178,8 +194,7 @@ public class Deck : MonoBehaviour
 
         }
         float probB = casosFavorablesB / (52 - dealer.GetComponent<CardHand>().cards.Count - player.GetComponent<CardHand>().cards.Count);
-        //Debug.Log(probB);
-        probBMessage.text = "Proba B : " + probB.ToString();
+        probBMessage.text = probB.ToString();
 
 
         float casosFavorablesC = 0;
@@ -221,7 +236,7 @@ public class Deck : MonoBehaviour
         }
         float probC = casosFavorablesC / (52 - dealer.GetComponent<CardHand>().cards.Count - player.GetComponent<CardHand>().cards.Count);
         //Debug.Log(probC);
-        probCMessage.text = "Proba C : " + probC.ToString();
+        probCMessage.text = probC.ToString();
     }
 
     void PushDealer()
@@ -230,7 +245,8 @@ public class Deck : MonoBehaviour
          * Dependiendo de cómo se implemente ShuffleCards, es posible que haya que cambiar el índice.
          */
         dealer.GetComponent<CardHand>().Push(faces[cardIndex],values[cardIndex]);
-        cardIndex++;        
+        cardIndex++;
+        CalculateProbabilities();
     }
 
     void PushPlayer()
@@ -256,7 +272,7 @@ public class Deck : MonoBehaviour
         {
             hitButton.interactable = false;
             stickButton.interactable = false;
-            finalMessage.text = "Has perdido!";
+            perder();
         }
 
     }
@@ -276,33 +292,97 @@ public class Deck : MonoBehaviour
         }
         if (dealer.GetComponent<CardHand>().points > 21)
         {
-            finalMessage.text = "Has ganado!";
+            ganar();
         }
         else if (dealer.GetComponent<CardHand>().points < player.GetComponent<CardHand>().points)
         {
-            finalMessage.text = "Has ganado!";
+            ganar();
         }
         else if (dealer.GetComponent<CardHand>().points > player.GetComponent<CardHand>().points)
         {
-            finalMessage.text = "Has perdido!";
+            perder();
         }
         else if (dealer.GetComponent<CardHand>().points == player.GetComponent<CardHand>().points)
         {
-            finalMessage.text = "Empate!";
+            empate();
         }
 
     }
 
-    public void PlayAgain()
+    public void Apostar()
     {
+        subirButton.interactable = false;
+        bajarButton.interactable = false;
+        apostarButton.interactable = false;
+
         hitButton.interactable = true;
         stickButton.interactable = true;
+        playAgainButton.interactable = true;
+        StartGame();
+    }
+
+    public void subirApuesta()
+    {
+        if(apuestaAmount+10 <= bancaAmount)
+        {
+            apuestaAmount += 10;
+            apuesta.text = apuestaAmount.ToString();
+        }
+        
+    }
+    public void bajarApuesta()
+    {
+        if (apuestaAmount - 10 >= 0)
+        {
+            apuestaAmount -= 10;
+            apuesta.text = apuestaAmount.ToString();
+        }
+    }
+
+    public void ganar()
+    {
+        finalMessage.text = "Has ganado!";
+        bancaAmount += apuestaAmount;
+        banca.text = bancaAmount.ToString();
+        apuestaAmount = 0;
+        apuesta.text = apuestaAmount.ToString();
+    }
+
+    public void perder()
+    {
+        finalMessage.text = "Has perdido!";
+        bancaAmount -= apuestaAmount;
+        banca.text = bancaAmount.ToString();
+        apuestaAmount = 0;
+        apuesta.text = apuestaAmount.ToString();
+    }
+
+    public void empate()
+    {
+        finalMessage.text = "Empate!";
+        apuestaAmount = 0;
+        apuesta.text = apuestaAmount.ToString();
+    }
+
+    public void PlayAgain()
+    {
+        apuestaAmount = 0;
+        apuesta.text = apuestaAmount.ToString();
+
+        subirButton.interactable = true;
+        bajarButton.interactable = true;
+        apostarButton.interactable = true;
+
+        hitButton.interactable = false;
+        stickButton.interactable = false;
+        playAgainButton.interactable = false;
+
         finalMessage.text = "";
         player.GetComponent<CardHand>().Clear();
         dealer.GetComponent<CardHand>().Clear();          
         cardIndex = 0;
         ShuffleCards();
-        StartGame();
+        
     }
     
 }
