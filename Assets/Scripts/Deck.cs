@@ -80,9 +80,23 @@ public class Deck : MonoBehaviour
         {
             PushPlayer();
             PushDealer();
-            /*TODO:
-             * Si alguno de los dos obtiene Blackjack, termina el juego y mostramos mensaje
-             */
+
+            CardHand Player = player.gameObject.GetComponent<CardHand>();
+            CardHand Dealer = dealer.gameObject.GetComponent<CardHand>();
+
+            if (Player.points == 21)
+            {
+                hitButton.interactable = false;
+                stickButton.interactable = false;
+                finalMessage.text = "Has ganado!";
+            }
+            else if (Dealer.points == 21)
+            {
+                hitButton.interactable = false;
+                stickButton.interactable = false;
+                finalMessage.text = "Has perdido!";
+            }
+
         }
     }
 
