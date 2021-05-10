@@ -10,7 +10,9 @@ public class Deck : MonoBehaviour
     public Button stickButton;
     public Button playAgainButton;
     public Text finalMessage;
-    public Text probMessage;
+    public Text probAMessage;
+    public Text probBMessage;
+    public Text probCMessage;
 
     public int[] values = new int[52];
     int cardIndex = 0;    
@@ -102,12 +104,124 @@ public class Deck : MonoBehaviour
 
     private void CalculateProbabilities()
     {
-        /*TODO:
-         * Calcular las probabilidades de:
-         * - Teniendo la carta oculta, probabilidad de que el dealer tenga más puntuación que el jugador
-         * - Probabilidad de que el jugador obtenga entre un 17 y un 21 si pide una carta
-         * - Probabilidad de que el jugador obtenga más de 21 si pide una carta          
-         */
+        int manoJugador = player.GetComponent<CardHand>().points;
+
+
+        if (cardIndex == 4)
+        {
+            int manoDealer = dealer.GetComponent<CardHand>().cards[1].GetComponent<CardModel>().value;
+            float casosFavorablesA = 0;
+
+            for (int i = 0; i < 52; i++)
+            {
+                if (player.GetComponent<CardHand>().cards.Count > 1 && player.GetComponent<CardHand>().points != 21)
+                {
+
+                    if (dealer.GetComponent<CardHand>().cards[1].GetComponent<CardModel>().front.Equals(faces[i]) || player.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().front.Equals(faces[i]) || player.GetComponent<CardHand>().cards[1].GetComponent<CardModel>().front.Equals(faces[i]))
+                    {
+
+                    }
+                    else
+                    {
+                        if (manoDealer + values[i] > manoJugador)
+                        {
+                            casosFavorablesA++;
+                        }
+                        else if ((manoDealer == 1 || values[i] == 1) && manoDealer + values[i] == 11)
+                        {
+                            casosFavorablesA++;
+                        }
+                    }
+                }
+
+            }
+            float probA = casosFavorablesA / 49;
+            //Debug.Log(probA);
+            probAMessage.text = "Proba A : " + probA.ToString() + " ";
+        }
+
+        float casosFavorablesB = 0;
+
+        for (int i = 0; i < 52; i++)
+        {
+            bool repartida = false;
+            if (dealer.GetComponent<CardHand>().cards.Count != 0)
+            {
+                for (int j = 0; j < dealer.GetComponent<CardHand>().cards.Count; j++)
+                {
+                    if (dealer.GetComponent<CardHand>().cards[j].GetComponent<CardModel>().front.Equals(faces[i]))
+                    {
+                        repartida = true;
+                    }
+                }
+            }
+
+            if (player.GetComponent<CardHand>().cards.Count != 0)
+            {
+                for (int j = 0; j < player.GetComponent<CardHand>().cards.Count; j++)
+                {
+                    if (player.GetComponent<CardHand>().cards[j].GetComponent<CardModel>().front.Equals(faces[i]))
+                    {
+                        repartida = true;
+                    }
+                }
+            }
+
+
+            if (!repartida)
+            {
+                if (17 <= manoJugador + values[i] && manoJugador + values[i] <= 21)
+                {
+                    casosFavorablesB++;
+                }
+            }
+
+        }
+        float probB = casosFavorablesB / (52 - dealer.GetComponent<CardHand>().cards.Count - player.GetComponent<CardHand>().cards.Count);
+        //Debug.Log(probB);
+        probBMessage.text = "Proba B : " + probB.ToString();
+
+
+        float casosFavorablesC = 0;
+
+        for (int i = 0; i < 52; i++)
+        {
+            bool repartida = false;
+            if (dealer.GetComponent<CardHand>().cards.Count != 0)
+            {
+                for (int j = 0; j < dealer.GetComponent<CardHand>().cards.Count; j++)
+                {
+                    if (dealer.GetComponent<CardHand>().cards[j].GetComponent<CardModel>().front.Equals(faces[i]))
+                    {
+                        repartida = true;
+                    }
+                }
+            }
+
+            if (player.GetComponent<CardHand>().cards.Count != 0)
+            {
+                for (int j = 0; j < player.GetComponent<CardHand>().cards.Count; j++)
+                {
+                    if (player.GetComponent<CardHand>().cards[j].GetComponent<CardModel>().front.Equals(faces[i]))
+                    {
+                        repartida = true;
+                    }
+                }
+            }
+
+
+            if (!repartida)
+            {
+                if (manoJugador + values[i] > 21)
+                {
+                    casosFavorablesC++;
+                }
+            }
+
+        }
+        float probC = casosFavorablesC / (52 - dealer.GetComponent<CardHand>().cards.Count - player.GetComponent<CardHand>().cards.Count);
+        //Debug.Log(probC);
+        probCMessage.text = "Proba C : " + probC.ToString();
     }
 
     void PushDealer()
