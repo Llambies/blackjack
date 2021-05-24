@@ -12,7 +12,9 @@ public class Deck : MonoBehaviour
     public Button playAgainButton;
 
     public Button subirButton;
+    public Button subir100Button;
     public Button bajarButton;
+    public Button bajar100Button;
     public Button apostarButton;
 
     public Text finalMessage;
@@ -313,6 +315,8 @@ public class Deck : MonoBehaviour
     {
         subirButton.interactable = false;
         bajarButton.interactable = false;
+        subir100Button.interactable = false;
+        bajar100Button.interactable = false;
         apostarButton.interactable = false;
 
         hitButton.interactable = true;
@@ -330,11 +334,29 @@ public class Deck : MonoBehaviour
         }
         
     }
+    public void subirApuesta100()
+    {
+        if (apuestaAmount + 100 <= bancaAmount)
+        {
+            apuestaAmount += 100;
+            apuesta.text = apuestaAmount.ToString();
+        }
+
+    }
     public void bajarApuesta()
     {
         if (apuestaAmount - 10 >= 0)
         {
             apuestaAmount -= 10;
+            apuesta.text = apuestaAmount.ToString();
+        }
+    }
+
+    public void bajarApuesta100()
+    {
+        if (apuestaAmount - 100 >= 0)
+        {
+            apuestaAmount -= 100;
             apuesta.text = apuestaAmount.ToString();
         }
     }
@@ -371,6 +393,8 @@ public class Deck : MonoBehaviour
 
         subirButton.interactable = true;
         bajarButton.interactable = true;
+        subir100Button.interactable = true;
+        bajar100Button.interactable = true;
         apostarButton.interactable = true;
 
         hitButton.interactable = false;
